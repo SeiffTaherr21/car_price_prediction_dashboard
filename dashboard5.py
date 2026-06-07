@@ -111,15 +111,15 @@ if page == "📊 Dashboard":
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("#### 📈 Sales Trend per Brand (Area Chart)")
+        st.markdown("#### 📈 Sales Trend per Brand")
         yearly = dff.groupby(['brand', 'model_year']).size().reset_index(name='count')
-        fig1 = px.area(
+        fig1 = px.line(
             yearly, x='model_year', y='count', color='brand',
             labels={'model_year': 'Year', 'count': 'Sales Count', 'brand': 'Brand'},
             template='plotly_dark', height=430,
             color_discrete_sequence=PALETTE,
         )
-        fig1.update_traces(line=dict(width=1.2))
+        fig1.update_traces(line=dict(width=2))
         fig1.update_layout(**LAYOUT,
             legend=dict(orientation='v', x=1.01, y=1),
             xaxis=dict(tickangle=-45)
@@ -127,7 +127,7 @@ if page == "📊 Dashboard":
         st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
-        st.markdown("#### 🛣️ Avg Mileage per Brand (Lollipop)")
+        st.markdown("#### 🛣️ Avg Mileage per Brand")
         avg_mil = dff.groupby('brand')['milage'].mean().reset_index()
         avg_mil.columns = ['brand', 'avg_mileage']
         avg_mil = avg_mil.sort_values('avg_mileage', ascending=True)
@@ -163,7 +163,7 @@ if page == "📊 Dashboard":
     col3, col4 = st.columns(2)
 
     with col3:
-        st.markdown("#### 🚘 Exterior Colors Distribution (Treemap)")
+        st.markdown("#### 🚘 Exterior Colors Distribution")
         ext_counts = dff.groupby(['brand', 'ext_col']).size().reset_index(name='count')
         ext_top = ext_counts.sort_values('count', ascending=False).groupby('brand').head(5).reset_index(drop=True)
         fig3 = px.treemap(
@@ -183,7 +183,7 @@ if page == "📊 Dashboard":
         st.plotly_chart(fig3, use_container_width=True)
 
     with col4:
-        st.markdown("#### 🪑 Interior Colors Distribution (Sunburst)")
+        st.markdown("#### 🪑 Interior Colors Distribution")
         int_counts = dff.groupby(['brand', 'int_col']).size().reset_index(name='count')
         int_top = int_counts.sort_values('count', ascending=False).groupby('brand').head(5).reset_index(drop=True)
         fig4 = px.sunburst(
