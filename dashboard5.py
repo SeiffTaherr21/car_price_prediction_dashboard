@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import joblib
 import numpy as np
 
-st.set_page_config(page_title="Cars Market Analytics", layout="wide", page_icon="🚗")
+st.set_page_config(page_title="Cars Dashboard", layout="wide", page_icon="🚗")
 
 PALETTE = [
     "#00d4ff", "#00b8e6", "#009dcc", "#0081b3",
@@ -18,246 +18,358 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
-.main { background-color: #080b14; }
-.block-container { padding-top: 2rem; padding-left: 2.5rem; padding-right: 2.5rem; }
-
-div[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0d1120 0%, #080b14 100%);
-    border-right: 1px solid rgba(0,212,255,0.12);
+html, body, [class*="css"] {
+    font-family: 'DM Sans', sans-serif;
 }
-div[data-testid="stSidebar"] .block-container { padding: 1.5rem 1rem; }
 
-.sidebar-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #00d4ff;
-    letter-spacing: -0.5px;
-    padding: 0.75rem 0 1.25rem 0;
-    border-bottom: 1px solid rgba(0,212,255,0.15);
-    margin-bottom: 1.5rem;
+/* ─── Global Background ─── */
+.stApp {
+    background: #070b14;
+    background-image:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0, 102, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0, 212, 255, 0.06) 0%, transparent 60%);
 }
-.sidebar-logo span { color: #ffffff; }
 
+.main .block-container {
+    padding-top: 2rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    max-width: 1400px;
+}
+
+/* ─── Sidebar ─── */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0d1120 0%, #070b14 100%) !important;
+    border-right: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+[data-testid="stSidebar"]::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, #0066ff, #00d4ff, transparent);
+    margin-bottom: 1rem;
+}
+
+[data-testid="stSidebar"] .stRadio label {
+    color: #8899bb !important;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+[data-testid="stSidebar"] .stRadio label:hover {
+    color: #00d4ff !important;
+}
+
+/* ─── Page Title ─── */
 .page-header {
-    font-family: 'Syne', sans-serif;
-    font-size: 2rem;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 0.25rem;
 }
-.page-header span { color: #00d4ff; }
-.page-sub { color: #5a6a8a; font-size: 0.9rem; margin-bottom: 1.75rem; }
+.page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #00d4ff 60%, #0066ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin: 0;
+}
+.page-subtitle {
+    color: #4a5a7a;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
 
+/* ─── Divider ─── */
+.fancy-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), rgba(0,102,255,0.2), transparent);
+    margin: 1.5rem 0;
+    border: none;
+}
+
+/* ─── KPI Cards ─── */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.85rem;
-    margin-bottom: 2rem;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
 }
 .kpi-card {
-    background: #0d1120;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    padding: 1.1rem 1.25rem 1rem;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-.kpi-accent {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    border-radius: 2px 2px 0 0;
-}
-.kpi-icon-box {
+    background: #0a0e1a;
+    border: 1px solid rgba(0,212,255,0.09);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 34px; height: 34px;
-    border-radius: 9px;
-    margin-bottom: 14px;
-    font-size: 16px;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+.kpi-card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #0066ff, #00d4ff);
+    border-radius: 12px 0 0 12px;
+}
+.kpi-icon-box {
+    width: 38px; height: 38px;
+    min-width: 38px;
+    border-radius: 10px;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+}
+.kpi-text { flex: 1; min-width: 0; }
+.kpi-label {
+    font-size: 0.6rem;
+    color: #304560;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
 }
 .kpi-value {
     font-family: 'Syne', sans-serif;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #f0f4ff;
-    letter-spacing: -0.5px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #e8f4ff;
     line-height: 1;
-    margin-bottom: 0.35rem;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
 }
-.kpi-value small {
-    font-size: 0.72rem;
+.kpi-value sup {
+    font-size: 0.6rem;
     font-weight: 500;
-    color: #3a4a6a;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    flex-shrink: 0;
+    color: #00d4ff;
+    margin-left: 2px;
+    vertical-align: super;
 }
-.kpi-label {
-    color: #4a5a7a;
-    font-size: 0.73rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.9px;
-}
-.kpi-card {
-    min-height: 130px;
-}
-.kpi-blue .kpi-accent  { background: linear-gradient(90deg, #378ADD, #185FA5); }
-.kpi-green .kpi-accent { background: linear-gradient(90deg, #1D9E75, #0F6E56); }
-.kpi-amber .kpi-accent { background: linear-gradient(90deg, #EF9F27, #BA7517); }
-.kpi-pink .kpi-accent  { background: linear-gradient(90deg, #D4537E, #993556); }
-.kpi-blue .kpi-icon-box  { background: rgba(55,138,221,0.12); color: #66b3ee; }
-.kpi-green .kpi-icon-box { background: rgba(29,158,117,0.12); color: #4dcca0; }
-.kpi-amber .kpi-icon-box { background: rgba(239,159,39,0.12); color: #f4b95a; }
-.kpi-pink .kpi-icon-box  { background: rgba(212,83,126,0.12); color: #e87da8; }
 
-.section-header {
+/* ─── Section Heading ─── */
+.section-heading {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    margin: 2rem 0 1.25rem 0;
+    gap: 0.75rem;
+    margin: 1.5rem 0 1rem 0;
 }
-.section-header-line {
-    width: 3px; height: 22px;
-    background: linear-gradient(180deg, #00d4ff, #0066ff);
-    border-radius: 2px; flex-shrink: 0;
+.section-heading-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, rgba(0,102,255,0.2), rgba(0,212,255,0.1));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
 }
-.section-header-text {
+.section-heading-text {
     font-family: 'Syne', sans-serif;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    color: #e0e8ff;
-    letter-spacing: -0.2px;
+    color: #ddeeff;
 }
-
-.chart-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #8899bb;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.6rem;
-}
-
-.divider {
+.section-heading-line {
+    flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.15), transparent);
-    margin: 1.5rem 0;
+    background: linear-gradient(90deg, rgba(0,212,255,0.15), transparent);
 }
 
-.pred-section-title {
-    font-family: 'Syne', sans-serif;
+/* ─── Chart Container ─── */
+.chart-card {
+    background: rgba(13,17,32,0.7);
+    border: 1px solid rgba(0, 212, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.2rem 1rem 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+}
+.chart-label {
     font-size: 0.78rem;
-    font-weight: 700;
-    color: #00d4ff;
+    font-weight: 600;
+    color: #4a6080;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    padding-left: 0.25rem;
+}
+
+/* ─── Predictor Page ─── */
+.pred-section {
+    background: rgba(13,17,32,0.7);
+    border: 1px solid rgba(0, 212, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
     margin-bottom: 1.25rem;
 }
+.pred-section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #00d4ff;
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.pred-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,212,255,0.25), transparent);
+}
 
-.price-result {
-    background: linear-gradient(135deg, rgba(0,102,255,0.12), rgba(0,212,255,0.08));
-    border: 1px solid rgba(0,212,255,0.35);
-    border-radius: 18px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    margin: 1.5rem 0;
+/* ─── Price Result Card ─── */
+.price-result-wrap {
     position: relative;
+    margin-top: 1.5rem;
+    border-radius: 20px;
     overflow: hidden;
 }
-.price-result::before {
-    content: '';
+.price-result-glow {
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #0066ff, #00d4ff, #0066ff);
-}
-.price-tag {
-    font-family: 'Syne', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: -2px;
-    line-height: 1;
-    margin: 0.5rem 0;
-}
-.price-tag span { color: #00d4ff; }
-.price-label {
-    color: #5a6a8a;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 600;
-}
-.price-badge {
-    display: inline-block;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.25);
+    inset: -1px;
+    background: linear-gradient(135deg, #0066ff, #00d4ff, #0066ff);
     border-radius: 20px;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.78rem;
-    color: #00d4ff;
-    margin: 0.2rem;
+    opacity: 0.5;
+    z-index: 0;
+    animation: glowPulse 3s ease-in-out infinite;
 }
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.65; }
+}
+.price-result-inner {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, #0d1425 0%, #07101f 100%);
+    border-radius: 19px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+.price-result-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #4a6880;
+    margin-bottom: 0.75rem;
+}
+.price-result-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+.price-result-meta {
+    display: inline-flex;
+    gap: 1rem;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.1);
+    border-radius: 100px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.82rem;
+    color: #6688aa;
+}
+.price-result-meta span { color: #99bbcc; font-weight: 500; }
 
-div[data-testid="stButton"] > button[kind="primary"] {
-    background: linear-gradient(135deg, #0066ff, #00b8e6) !important;
+/* ─── Predict Button ─── */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #0066ff, #00aaff) !important;
     border: none !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     font-family: 'Syne', sans-serif !important;
     font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: 0.5px !important;
-    padding: 0.6rem 1.5rem !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.05em !important;
+    padding: 0.7rem 2rem !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(0, 102, 255, 0.35) !important;
+    transition: all 0.25s !important;
+}
+.stButton > button[kind="primary"]:hover {
+    box-shadow: 0 6px 30px rgba(0, 180, 255, 0.5) !important;
+    transform: translateY(-1px) !important;
 }
 
-div[data-testid="stMetric"] { display: none; }
-
-div[data-testid="stSelectbox"] label,
-div[data-testid="stNumberInput"] label,
-div[data-testid="stMultiSelect"] label {
-    color: #8899bb !important;
-    font-size: 0.78rem !important;
-    font-weight: 500 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
+/* ─── Inputs ─── */
+.stSelectbox > div > div,
+.stNumberInput > div > div > input {
+    background: rgba(13,17,32,0.8) !important;
+    border: 1px solid rgba(0,212,255,0.15) !important;
+    border-radius: 10px !important;
+    color: #ddeeff !important;
+}
+.stSelectbox > div > div:hover,
+.stNumberInput > div > div > input:focus {
+    border-color: rgba(0,212,255,0.4) !important;
 }
 
-.footer {
+/* ─── Dataframe ─── */
+[data-testid="stDataFrame"] {
+    border: 1px solid rgba(0,212,255,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* ─── Caption / Footer ─── */
+.dash-footer {
     text-align: center;
     color: #2a3a5a;
-    font-size: 0.78rem;
-    padding: 1.5rem 0 0.5rem;
-    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1.5rem 0 1rem;
+}
+
+/* ─── Multiselect ─── */
+.stMultiSelect > div > div {
+    background: rgba(13,17,32,0.8) !important;
+    border: 1px solid rgba(0,212,255,0.15) !important;
+    border-radius: 10px !important;
+}
+
+/* ─── Similar cars section title ─── */
+.similar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #4a6880;
+    margin: 1.5rem 0 0.75rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
 LAYOUT = dict(
-    plot_bgcolor='#0d1120',
-    paper_bgcolor='#0d1120',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#8899bb', family='DM Sans'),
     margin=dict(l=10, r=10, t=10, b=10),
 )
 
+# ── Load Data ──────────────────────────────────────────
 @st.cache_data
 def load_data():
-    return pd.read_csv("cars_updated_2.csv")
+    df = pd.read_csv("cars_updated_2.csv")
+    return df
 
 @st.cache_resource
 def load_model():
@@ -266,168 +378,243 @@ def load_model():
 df = load_data()
 model = load_model()
 
-st.sidebar.markdown('<div class="sidebar-logo">🚗 Cars<span>Analytics</span></div>', unsafe_allow_html=True)
-page = st.sidebar.radio("", ["📊 Dashboard", "🤖 Price Predictor"], label_visibility="collapsed")
-st.sidebar.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+# ── Sidebar ─────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("""
+    <div style="padding: 1rem 0 1.5rem;">
+        <div style="font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800;
+                    background:linear-gradient(135deg,#fff,#00d4ff);
+                    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+                    background-clip:text; margin-bottom:0.2rem;">
+            🚗 AutoInsight
+        </div>
+        <div style="color:#2a3a5a; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em;">
+            Market Intelligence
+        </div>
+    </div>
+    <hr style="border:none; height:1px; background:linear-gradient(90deg,rgba(0,212,255,0.2),transparent); margin-bottom:1.5rem;">
+    """, unsafe_allow_html=True)
+
+    page = st.radio("", ["📊 Dashboard", "🤖 Price Predictor"], label_visibility="collapsed")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if page == "📊 Dashboard":
+        st.markdown('<div style="color:#2a4060; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:0.5rem;">Filter by Brand</div>', unsafe_allow_html=True)
+        all_brands = sorted(df['brand'].unique())
+        selected_brands = st.multiselect("", all_brands, default=all_brands[:15], label_visibility="collapsed")
+        dff = df[df['brand'].isin(selected_brands)] if selected_brands else df
 
 # ══════════════════════════════════════════════════════
 #  PAGE 1 – DASHBOARD
 # ══════════════════════════════════════════════════════
 if page == "📊 Dashboard":
 
-    st.markdown("""
-    <div class="page-header">Market <span>Dashboard</span></div>
-    <div class="page-sub">Used Cars — Real-Time Analytics & Insights</div>
-    """, unsafe_allow_html=True)
+    # Header
+    st.markdown('<div class="page-title">Cars Market Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-subtitle">Real-time market intelligence · Used cars analysis</div>', unsafe_allow_html=True)
 
+    # ── KPI Row ─────────────────────────────────────────
     st.markdown(f"""
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <div class="kpi-grid">
-        <div class="kpi-card kpi-blue">
-            <div class="kpi-accent"></div>
-            <div class="kpi-icon-box"><i class="ti ti-car"></i></div>
-            <div class="kpi-value">{len(df):,}</div>
-            <div class="kpi-label">Total Listings</div>
+        <div class="kpi-card">
+            <div class="kpi-icon-box">🚙</div>
+            <div class="kpi-text">
+                <div class="kpi-label">Total Listings</div>
+                <div class="kpi-value">{len(df):,}</div>
+            </div>
         </div>
-        <div class="kpi-card kpi-green">
-            <div class="kpi-accent"></div>
-            <div class="kpi-icon-box"><i class="ti ti-tag"></i></div>
-            <div class="kpi-value">{df['brand'].nunique()}</div>
-            <div class="kpi-label">Brands</div>
+        <div class="kpi-card">
+            <div class="kpi-icon-box">🏷️</div>
+            <div class="kpi-text">
+                <div class="kpi-label">Active Brands</div>
+                <div class="kpi-value">{df['brand'].nunique()}</div>
+            </div>
         </div>
-        <div class="kpi-card kpi-amber">
-            <div class="kpi-accent"></div>
-            <div class="kpi-icon-box"><i class="ti ti-currency-dollar"></i></div>
-            <div class="kpi-value">${df['price'].mean():,.0f}</div>
-            <div class="kpi-label">Avg Price</div>
+        <div class="kpi-card">
+            <div class="kpi-icon-box">💵</div>
+            <div class="kpi-text">
+                <div class="kpi-label">Avg Market Price</div>
+                <div class="kpi-value">${df['price'].mean():,.0f}</div>
+            </div>
         </div>
-        <div class="kpi-card kpi-pink">
-            <div class="kpi-accent"></div>
-            <div class="kpi-icon-box"><i class="ti ti-bolt"></i></div>
-            <div class="kpi-value">{df['horsepower'].mean():,.0f}<small>HP</small></div>
-            <div class="kpi-label">Avg Horsepower</div>
+        <div class="kpi-card">
+            <div class="kpi-icon-box">⚡</div>
+            <div class="kpi-text">
+                <div class="kpi-label">Avg Horsepower</div>
+                <div class="kpi-value">{df['horsepower'].mean():,.0f}<sup>HP</sup></div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    all_brands = sorted(df['brand'].unique())
-    st.sidebar.markdown("**Filter by Brand**")
-    selected_brands = st.sidebar.multiselect("", all_brands, default=all_brands[:15], label_visibility="collapsed")
-    dff = df[df['brand'].isin(selected_brands)] if selected_brands else df
+    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
 
-    # ROW 1
-    st.markdown('<div class="section-header"><div class="section-header-line"></div><div class="section-header-text">Sales Volume & Mileage Analysis</div></div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
+    # ══ ROW 1 ══
+    st.markdown("""
+    <div class="section-heading">
+        <div class="section-heading-icon">📊</div>
+        <div class="section-heading-text">Sales Volume & Mileage</div>
+        <div class="section-heading-line"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2, gap="medium")
 
     with col1:
-        st.markdown('<div class="chart-title">📈 Sales Trend per Brand</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-label">Sales Trend per Brand · Line Chart</div>', unsafe_allow_html=True)
         yearly = dff.groupby(['brand', 'model_year']).size().reset_index(name='count')
-        fig1 = px.line(yearly, x='model_year', y='count', color='brand',
-            labels={'model_year': 'Year', 'count': 'Sales Count', 'brand': 'Brand'},
-            template='plotly_dark', height=400, color_discrete_sequence=PALETTE)
-        fig1.update_traces(line=dict(width=2))
+        fig1 = px.line(
+            yearly, x='model_year', y='count', color='brand',
+            labels={'model_year': 'Year', 'count': 'Count', 'brand': 'Brand'},
+            template='plotly_dark', height=400,
+            color_discrete_sequence=PALETTE,
+        )
+        fig1.update_traces(line=dict(width=2), mode='lines+markers',
+                           marker=dict(size=4))
         fig1.update_layout(**LAYOUT,
-            legend=dict(orientation='v', x=1.01, y=1, bgcolor='rgba(0,0,0,0)', font=dict(size=11)),
-            xaxis=dict(tickangle=-45, gridcolor='rgba(255,255,255,0.04)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.04)'))
+            legend=dict(orientation='v', x=1.01, y=1, font=dict(size=10), bgcolor='rgba(0,0,0,0)'),
+            xaxis=dict(tickangle=-45, gridcolor='rgba(255,255,255,0.04)', linecolor='rgba(0,212,255,0.1)'),
+            yaxis=dict(gridcolor='rgba(255,255,255,0.04)', linecolor='rgba(0,212,255,0.1)'),
+        )
         st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
-        st.markdown('<div class="chart-title">🛣️ Avg Mileage per Brand</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-label">Avg Mileage per Brand · Lollipop</div>', unsafe_allow_html=True)
         avg_mil = dff.groupby('brand')['milage'].mean().reset_index()
         avg_mil.columns = ['brand', 'avg_mileage']
         avg_mil = avg_mil.sort_values('avg_mileage', ascending=True)
+
         fig2 = go.Figure()
-        fig2.add_trace(go.Scatter(x=avg_mil['avg_mileage'], y=avg_mil['brand'],
+        fig2.add_trace(go.Scatter(
+            x=avg_mil['avg_mileage'], y=avg_mil['brand'],
             mode='markers',
-            marker=dict(color=avg_mil['avg_mileage'],
-                colorscale=[[0,'#0066ff'],[0.5,'#009dcc'],[1,'#00d4ff']],
-                size=12, line=dict(color='white', width=1))))
+            marker=dict(
+                color=avg_mil['avg_mileage'],
+                colorscale=[[0, '#0066ff'], [0.5, '#009dcc'], [1, '#00d4ff']],
+                size=11, line=dict(color='rgba(255,255,255,0.3)', width=1)
+            ),
+            name='Avg Mileage'
+        ))
         for _, row in avg_mil.iterrows():
-            fig2.add_shape(type='line', x0=0, x1=row['avg_mileage'],
+            fig2.add_shape(
+                type='line',
+                x0=0, x1=row['avg_mileage'],
                 y0=row['brand'], y1=row['brand'],
-                line=dict(color='rgba(0,212,255,0.2)', width=1.5))
-        fig2.update_layout(**LAYOUT, height=400,
-            xaxis=dict(title='Avg Mileage (miles)', gridcolor='rgba(255,255,255,0.04)'),
-            yaxis=dict(title='', gridcolor='rgba(255,255,255,0.04)'))
+                line=dict(color='rgba(0, 212, 255, 0.18)', width=1.5)
+            )
+        fig2.update_layout(**LAYOUT,
+            height=400,
+            xaxis=dict(title='Avg Mileage (mi)', gridcolor='rgba(255,255,255,0.04)', linecolor='rgba(0,212,255,0.1)'),
+            yaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
+        )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # ROW 2
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-header"><div class="section-header-line"></div><div class="section-header-text">Color Popularity Analysis</div></div>', unsafe_allow_html=True)
-    col3, col4 = st.columns(2)
+    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+
+    # ══ ROW 2 ══
+    st.markdown("""
+    <div class="section-heading">
+        <div class="section-heading-icon">🎨</div>
+        <div class="section-heading-text">Color Popularity Analysis</div>
+        <div class="section-heading-line"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col3, col4 = st.columns(2, gap="medium")
 
     with col3:
-        st.markdown('<div class="chart-title">🚘 Exterior Colors Distribution</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-label">Exterior Colors · Treemap</div>', unsafe_allow_html=True)
         ext_counts = dff.groupby(['brand', 'ext_col']).size().reset_index(name='count')
         ext_top = ext_counts.sort_values('count', ascending=False).groupby('brand').head(5).reset_index(drop=True)
-        fig3 = px.treemap(ext_top, path=['brand', 'ext_col'], values='count',
-            template='plotly_dark', height=400, color='count',
-            color_continuous_scale=[[0,'#0066ff'],[0.5,'#009dcc'],[1,'#00d4ff']])
-        fig3.update_traces(textfont=dict(color='white'), marker=dict(cornerradius=5))
+        fig3 = px.treemap(
+            ext_top, path=['brand', 'ext_col'], values='count',
+            template='plotly_dark', height=400,
+            color='count',
+            color_continuous_scale=[[0, '#001a4d'], [0.5, '#004488'], [1, '#00d4ff']],
+        )
+        fig3.update_traces(
+            textfont=dict(color='white', size=12),
+            marker=dict(cornerradius=6),
+        )
         fig3.update_layout(**LAYOUT, coloraxis_showscale=False)
         st.plotly_chart(fig3, use_container_width=True)
 
     with col4:
-        st.markdown('<div class="chart-title">🪑 Interior Colors Distribution</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-label">Interior Colors · Sunburst</div>', unsafe_allow_html=True)
         int_counts = dff.groupby(['brand', 'int_col']).size().reset_index(name='count')
         int_top = int_counts.sort_values('count', ascending=False).groupby('brand').head(5).reset_index(drop=True)
-        fig4 = px.sunburst(int_top, path=['brand', 'int_col'], values='count',
-            template='plotly_dark', height=400, color='count',
-            color_continuous_scale=[[0,'#0066ff'],[0.5,'#009dcc'],[1,'#00d4ff']])
-        fig4.update_traces(textfont=dict(color='white'))
+        fig4 = px.sunburst(
+            int_top, path=['brand', 'int_col'], values='count',
+            template='plotly_dark', height=400,
+            color='count',
+            color_continuous_scale=[[0, '#001a4d'], [0.5, '#004488'], [1, '#00d4ff']],
+        )
+        fig4.update_traces(textfont=dict(color='white', size=11))
         fig4.update_layout(**LAYOUT, coloraxis_showscale=False)
         st.plotly_chart(fig4, use_container_width=True)
 
-    # ROW 3
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-header"><div class="section-header-line"></div><div class="section-header-text">Performance & Pricing Analysis</div></div>', unsafe_allow_html=True)
-    col5, col6 = st.columns(2)
+    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+
+    # ══ ROW 3 ══
+    st.markdown("""
+    <div class="section-heading">
+        <div class="section-heading-icon">⚡</div>
+        <div class="section-heading-text">Performance & Pricing</div>
+        <div class="section-heading-line"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col5, col6 = st.columns(2, gap="medium")
 
     with col5:
-        st.markdown('<div class="chart-title">⚡ Avg Horsepower per Brand</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-label">Avg Horsepower per Brand · Bar Chart</div>', unsafe_allow_html=True)
         avg_hp = dff.groupby('brand')['horsepower'].mean().reset_index()
         avg_hp.columns = ['brand', 'avg_hp']
         avg_hp = avg_hp.sort_values('avg_hp', ascending=False)
-        fig5 = px.bar(avg_hp, x='brand', y='avg_hp',
+        fig5 = px.bar(
+            avg_hp, x='brand', y='avg_hp',
             labels={'avg_hp': 'Avg HP', 'brand': 'Brand'},
             template='plotly_dark', color='avg_hp',
-            color_continuous_scale=[[0,'#0066ff'],[0.5,'#009dcc'],[1,'#00d4ff']], height=400)
-        fig5.update_layout(**{**LAYOUT, 'margin': dict(l=10,r=10,t=10,b=80)},
+            color_continuous_scale=[[0, '#001a4d'], [0.5, '#0055cc'], [1, '#00d4ff']],
+            height=400,
+        )
+        fig5.update_layout(**{**LAYOUT, 'margin': dict(l=10, r=10, t=5, b=80)},
             coloraxis_showscale=False,
             xaxis=dict(tickangle=-45, gridcolor='rgba(255,255,255,0.04)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.04)'), bargap=0.3)
-        fig5.update_traces(marker_line_width=0)
+            yaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
+        )
         st.plotly_chart(fig5, use_container_width=True)
 
     with col6:
-        st.markdown('<div class="chart-title">💰 Avg Price per Brand</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-label">Avg Price per Brand · Bar Chart</div>', unsafe_allow_html=True)
         avg_price = dff.groupby('brand')['price'].mean().reset_index()
         avg_price.columns = ['brand', 'avg_price']
         avg_price = avg_price.sort_values('avg_price', ascending=False)
-        fig6 = px.bar(avg_price, x='brand', y='avg_price',
+        fig6 = px.bar(
+            avg_price, x='brand', y='avg_price',
             labels={'avg_price': 'Avg Price (USD)', 'brand': 'Brand'},
             template='plotly_dark', color='avg_price',
-            color_continuous_scale=[[0,'#0066ff'],[0.5,'#009dcc'],[1,'#00d4ff']], height=400)
-        fig6.update_layout(**{**LAYOUT, 'margin': dict(l=10,r=10,t=10,b=80)},
+            color_continuous_scale=[[0, '#001a4d'], [0.5, '#0055cc'], [1, '#00d4ff']],
+            height=400,
+        )
+        fig6.update_layout(**{**LAYOUT, 'margin': dict(l=10, r=10, t=5, b=80)},
             coloraxis_showscale=False,
             xaxis=dict(tickangle=-45, gridcolor='rgba(255,255,255,0.04)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.04)'), bargap=0.3)
-        fig6.update_traces(marker_line_width=0)
+            yaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
+        )
         fig6.update_yaxes(tickprefix='$', tickformat=',.0f')
         st.plotly_chart(fig6, use_container_width=True)
 
-    st.markdown('<div class="footer">Cars Market Analytics · Built with Streamlit & Plotly · XGBoost Model</div>', unsafe_allow_html=True)
+    st.markdown('<div class="dash-footer">AutoInsight · Cars Market Dashboard · Built with Streamlit & Plotly</div>', unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════
 #  PAGE 2 – PRICE PREDICTOR
 # ══════════════════════════════════════════════════════
 elif page == "🤖 Price Predictor":
 
-    st.markdown("""
-    <div class="page-header">Price <span>Predictor</span></div>
-    <div class="page-sub">XGBoost Model — Estimate Market Value Instantly</div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="page-title">Price Predictor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-subtitle">XGBoost Model · Market Price Estimation</div>', unsafe_allow_html=True)
 
     brands        = sorted(df['brand'].unique())
     fuel_types    = sorted(df['fuel_type'].dropna().unique())
@@ -436,71 +623,90 @@ elif page == "🤖 Price Predictor":
     int_colors    = sorted(df['int_col'].dropna().unique())
     cylinders     = ['cyl_3','cyl_4','cyl_5','cyl_6','cyl_8','cyl_10','cyl_12']
 
-    st.markdown('<div class="pred-section-title">🏷️ Brand & Specs</div>', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        brand = st.selectbox("Brand", brands)
-        fuel_type = st.selectbox("Fuel Type", fuel_types)
-    with c2:
-        transmission = st.selectbox("Transmission", transmissions)
-        num_cylinders = st.selectbox("Cylinders", cylinders, index=3)
-    with c3:
-        ext_col = st.selectbox("Exterior Color", ext_colors)
-        int_col = st.selectbox("Interior Color", int_colors)
+    # Section 1
+    st.markdown("""
+    <div class="pred-section">
+        <div class="pred-section-title">🏷️ &nbsp; Brand & Specifications</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="pred-section-title">📐 Numeric Specs</div>', unsafe_allow_html=True)
+    with st.container():
+        c1, c2, c3 = st.columns(3, gap="medium")
+        with c1:
+            brand = st.selectbox("Brand", brands)
+            fuel_type = st.selectbox("Fuel Type", fuel_types)
+        with c2:
+            transmission = st.selectbox("Transmission", transmissions)
+            num_cylinders = st.selectbox("Cylinders", cylinders, index=3)
+        with c3:
+            ext_col = st.selectbox("Exterior Color", ext_colors)
+            int_col = st.selectbox("Interior Color", int_colors)
 
-    n1, n2, n3, n4 = st.columns(4)
-    with n1:
-        model_year = st.number_input("Model Year",
-            min_value=int(df['model_year'].min()), max_value=int(df['model_year'].max()),
-            value=2020, step=1)
-    with n2:
-        horsepower = st.number_input("Horsepower (HP)",
-            min_value=50, max_value=2000,
-            value=int(df['horsepower'].median()), step=10)
-    with n3:
-        engine_size = st.number_input("Engine Size (L)",
-            min_value=0.5, max_value=10.0,
-            value=float(round(df['engine_size_liters'].median(), 1)),
-            step=0.1, format="%.1f")
-    with n4:
-        milage = st.number_input("Mileage (miles)",
-            min_value=0, max_value=500000,
-            value=int(df['milage'].median()), step=1000)
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+    # Section 2
+    st.markdown("""
+    <div class="pred-section">
+        <div class="pred-section-title">📐 &nbsp; Numeric Specs</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.container():
+        n1, n2, n3, n4 = st.columns(4, gap="medium")
+        with n1:
+            model_year = st.number_input("Model Year",
+                min_value=int(df['model_year'].min()),
+                max_value=int(df['model_year'].max()),
+                value=2020, step=1)
+        with n2:
+            horsepower = st.number_input("Horsepower (HP)",
+                min_value=50, max_value=2000,
+                value=int(df['horsepower'].median()), step=10)
+        with n3:
+            engine_size = st.number_input("Engine Size (L)",
+                min_value=0.5, max_value=10.0,
+                value=float(round(df['engine_size_liters'].median(), 1)),
+                step=0.1, format="%.1f")
+        with n4:
+            milage = st.number_input("Mileage (miles)",
+                min_value=0, max_value=500000,
+                value=int(df['milage'].median()), step=1000)
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     col_btn, _ = st.columns([1, 3])
     with col_btn:
-        predict_clicked = st.button("🔮 Predict Price", use_container_width=True, type="primary")
+        predict_clicked = st.button("🔮  Predict Price", use_container_width=True, type="primary")
 
     if predict_clicked:
         try:
             input_data = pd.DataFrame([{
-                'brand': brand, 'fuel_type': fuel_type, 'transmission': transmission,
-                'ext_col': ext_col, 'int_col': int_col, 'num_cylinders': num_cylinders,
-                'model_year': model_year, 'horsepower': horsepower,
-                'engine_size_liters': engine_size, 'milage': milage,
+                'brand': brand,
+                'fuel_type': fuel_type,
+                'transmission': transmission,
+                'ext_col': ext_col,
+                'int_col': int_col,
+                'num_cylinders': num_cylinders,
+                'model_year': model_year,
+                'horsepower': horsepower,
+                'engine_size_liters': engine_size,
+                'milage': milage,
             }])
 
             predicted_price = model.predict(input_data)[0]
 
             st.markdown(f"""
-            <div class="price-result">
-                <div class="price-label">Estimated Market Value</div>
-                <div class="price-tag"><span>$</span>{predicted_price:,.0f}</div>
-                <div style="margin-top:0.75rem">
-                    <span class="price-badge">{brand}</span>
-                    <span class="price-badge">{model_year}</span>
-                    <span class="price-badge">{horsepower} HP</span>
-                    <span class="price-badge">{milage:,} mi</span>
+            <div class="price-result-wrap">
+                <div class="price-result-glow"></div>
+                <div class="price-result-inner">
+                    <div class="price-result-label">Estimated Market Value</div>
+                    <div class="price-result-value">${predicted_price:,.0f}</div>
+                    <div class="price-result-meta">
+                        <span>{brand}</span> · <span>{model_year}</span> · <span>{horsepower} HP</span> · <span>{milage:,} mi</span>
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
-            st.markdown('<div class="section-header"><div class="section-header-line"></div><div class="section-header-text">Similar Cars in Dataset</div></div>', unsafe_allow_html=True)
 
             similar = df[
                 (df['brand'] == brand) &
@@ -509,6 +715,7 @@ elif page == "🤖 Price Predictor":
             ][['brand', 'model_year', 'horsepower', 'milage', 'price']].head(8)
 
             if not similar.empty:
+                st.markdown('<div class="similar-title">Similar Cars in Dataset</div>', unsafe_allow_html=True)
                 similar = similar.reset_index(drop=True)
                 similar_display = similar.copy()
                 similar_display['price'] = similar_display['price'].apply(lambda x: f"${x:,.0f}")
@@ -516,26 +723,31 @@ elif page == "🤖 Price Predictor":
                 similar_display.columns = ['Brand', 'Year', 'HP', 'Mileage', 'Price']
                 st.dataframe(similar_display, use_container_width=True, hide_index=True)
 
-                st.markdown('<div class="chart-title" style="margin-top:1rem">📊 Price Comparison</div>', unsafe_allow_html=True)
                 fig_comp = go.Figure()
                 fig_comp.add_trace(go.Bar(
                     x=similar['model_year'].astype(str) + ' #' + (similar.index + 1).astype(str),
                     y=similar['price'],
-                    marker=dict(color=similar['price'],
-                        colorscale=[[0,'#0066ff'],[0.5,'#009dcc'],[1,'#00d4ff']],
-                        line=dict(width=0)),
+                    marker=dict(
+                        color=similar['price'],
+                        colorscale=[[0, '#001a4d'], [0.5, '#0055cc'], [1, '#00d4ff']],
+                        line=dict(color='rgba(0,212,255,0.15)', width=1),
+                    ),
                     name='Similar Cars'
                 ))
-                fig_comp.add_hline(y=predicted_price, line_dash='dash',
-                    line_color='#00d4ff', line_width=2,
-                    annotation_text=f"  Prediction: ${predicted_price:,.0f}",
-                    annotation_font_color='#00d4ff', annotation_font_size=12)
+                fig_comp.add_hline(
+                    y=predicted_price,
+                    line_dash='dot', line_color='#00d4ff', line_width=2,
+                    annotation_text=f"  Your Prediction: ${predicted_price:,.0f}",
+                    annotation_font_color='#00d4ff',
+                    annotation_font_size=12,
+                )
                 fig_comp.update_layout(
-                    **{**LAYOUT, 'margin': dict(l=10,r=10,t=30,b=10)},
-                    template='plotly_dark', height=330, bargap=0.35,
+                    **{**LAYOUT, 'margin': dict(l=10, r=10, t=30, b=10)},
+                    template='plotly_dark',
+                    height=340,
                     xaxis=dict(title='Similar Cars', gridcolor='rgba(255,255,255,0.04)'),
-                    yaxis=dict(title='Price (USD)', gridcolor='rgba(255,255,255,0.04)',
-                        tickprefix='$', tickformat=',.0f'))
+                    yaxis=dict(title='Price (USD)', gridcolor='rgba(255,255,255,0.04)', tickprefix='$', tickformat=',.0f'),
+                )
                 st.plotly_chart(fig_comp, use_container_width=True)
             else:
                 st.info("No closely matching cars found in the dataset.")
@@ -544,4 +756,4 @@ elif page == "🤖 Price Predictor":
             st.error("Prediction failed. Please check inputs or model compatibility.")
             st.write("Debug info:", str(e))
 
-    st.markdown('<div class="footer">Price Predictor · XGBoost Model · Cars Market Analytics</div>', unsafe_allow_html=True)
+    st.markdown('<div class="dash-footer">AutoInsight · Price Predictor · XGBoost Model</div>', unsafe_allow_html=True)
