@@ -91,12 +91,20 @@ div[data-testid="stSidebar"] .block-container { padding: 1.5rem 1rem; }
     letter-spacing: -0.5px;
     line-height: 1;
     margin-bottom: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
 }
 .kpi-value small {
-    font-size: 0.95rem;
-    font-weight: 400;
+    font-size: 0.72rem;
+    font-weight: 500;
     color: #3a4a6a;
-    margin-left: 2px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    flex-shrink: 0;
 }
 .kpi-label {
     color: #4a5a7a;
@@ -104,6 +112,9 @@ div[data-testid="stSidebar"] .block-container { padding: 1.5rem 1rem; }
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.9px;
+}
+.kpi-card {
+    min-height: 130px;
 }
 .kpi-blue .kpi-accent  { background: linear-gradient(90deg, #378ADD, #185FA5); }
 .kpi-green .kpi-accent { background: linear-gradient(90deg, #1D9E75, #0F6E56); }
@@ -293,7 +304,7 @@ if page == "📊 Dashboard":
         <div class="kpi-card kpi-pink">
             <div class="kpi-accent"></div>
             <div class="kpi-icon-box"><i class="ti ti-bolt"></i></div>
-            <div class="kpi-value">{df['horsepower'].mean():,.0f} <small>HP</small></div>
+            <div class="kpi-value">{df['horsepower'].mean():,.0f}<small>HP</small></div>
             <div class="kpi-label">Avg Horsepower</div>
         </div>
     </div>
