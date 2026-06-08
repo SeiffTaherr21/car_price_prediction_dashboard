@@ -54,41 +54,65 @@ div[data-testid="stSidebar"] .block-container { padding: 1.5rem 1rem; }
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    gap: 0.85rem;
     margin-bottom: 2rem;
 }
 .kpi-card {
-    background: linear-gradient(135deg, #0d1120 0%, #101525 100%);
-    border: 1px solid rgba(0,212,255,0.14);
+    background: #0d1120;
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 14px;
-    padding: 1.2rem 1.4rem;
+    padding: 1.1rem 1.25rem 1rem;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
-.kpi-card::before {
-    content: '';
+.kpi-accent {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #0066ff, #00d4ff);
+    border-radius: 2px 2px 0 0;
 }
-.kpi-icon { font-size: 1.4rem; margin-bottom: 0.5rem; display: block; }
+.kpi-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    margin-bottom: 14px;
+    font-size: 16px;
+}
 .kpi-value {
     font-family: 'Syne', sans-serif;
-    font-size: 1.9rem;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: -1px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #f0f4ff;
+    letter-spacing: -0.5px;
     line-height: 1;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
+}
+.kpi-value small {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #3a4a6a;
+    margin-left: 2px;
 }
 .kpi-label {
     color: #4a5a7a;
-    font-size: 0.78rem;
+    font-size: 0.73rem;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.9px;
 }
+.kpi-blue .kpi-accent  { background: linear-gradient(90deg, #378ADD, #185FA5); }
+.kpi-green .kpi-accent { background: linear-gradient(90deg, #1D9E75, #0F6E56); }
+.kpi-amber .kpi-accent { background: linear-gradient(90deg, #EF9F27, #BA7517); }
+.kpi-pink .kpi-accent  { background: linear-gradient(90deg, #D4537E, #993556); }
+.kpi-blue .kpi-icon-box  { background: rgba(55,138,221,0.12); color: #66b3ee; }
+.kpi-green .kpi-icon-box { background: rgba(29,158,117,0.12); color: #4dcca0; }
+.kpi-amber .kpi-icon-box { background: rgba(239,159,39,0.12); color: #f4b95a; }
+.kpi-pink .kpi-icon-box  { background: rgba(212,83,126,0.12); color: #e87da8; }
 
 .section-header {
     display: flex;
@@ -246,25 +270,30 @@ if page == "📊 Dashboard":
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <div class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-icon">🚗</span>
+        <div class="kpi-card kpi-blue">
+            <div class="kpi-accent"></div>
+            <div class="kpi-icon-box"><i class="ti ti-car"></i></div>
             <div class="kpi-value">{len(df):,}</div>
             <div class="kpi-label">Total Listings</div>
         </div>
-        <div class="kpi-card">
-            <span class="kpi-icon">🏷️</span>
+        <div class="kpi-card kpi-green">
+            <div class="kpi-accent"></div>
+            <div class="kpi-icon-box"><i class="ti ti-tag"></i></div>
             <div class="kpi-value">{df['brand'].nunique()}</div>
             <div class="kpi-label">Brands</div>
         </div>
-        <div class="kpi-card">
-            <span class="kpi-icon">💰</span>
+        <div class="kpi-card kpi-amber">
+            <div class="kpi-accent"></div>
+            <div class="kpi-icon-box"><i class="ti ti-currency-dollar"></i></div>
             <div class="kpi-value">${df['price'].mean():,.0f}</div>
             <div class="kpi-label">Avg Price</div>
         </div>
-        <div class="kpi-card">
-            <span class="kpi-icon">⚡</span>
-            <div class="kpi-value">{df['horsepower'].mean():,.0f} <small style="font-size:1rem;color:#4a5a7a">HP</small></div>
+        <div class="kpi-card kpi-pink">
+            <div class="kpi-accent"></div>
+            <div class="kpi-icon-box"><i class="ti ti-bolt"></i></div>
+            <div class="kpi-value">{df['horsepower'].mean():,.0f} <small>HP</small></div>
             <div class="kpi-label">Avg Horsepower</div>
         </div>
     </div>
